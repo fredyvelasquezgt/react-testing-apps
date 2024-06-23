@@ -29,4 +29,7 @@ test('counter increments and decrements when the buttons are clicked', () => {
   expect(message.textContent).toBe('Current count: 1')
   act(() => decrement.click())
   expect(message.textContent).toBe('Current count: 0')
+
+  // extra credit missing
+
 })
