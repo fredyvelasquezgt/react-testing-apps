@@ -2,12 +2,13 @@
 // http://localhost:3000/login-submission
 
 import * as React from 'react'
-// 🐨 you'll need to grab waitForElementToBeRemoved from '@testing-library/react'
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
-// 🐨 you'll need to import rest from 'msw' and setupServer from msw/node
+import rest from 'msw'
+import { setupServer } from 'msw/lib/node'
 import Login from '../../components/login-submission'
+import { o } from 'msw/lib/glossary-58eca5a8'
 
 const buildLoginForm = build({
   fields: {
@@ -16,9 +17,8 @@ const buildLoginForm = build({
   },
 })
 
-// 🐨 get the server setup with an async function to handle the login POST request:
-// 💰 here's something to get you started
-// rest.post(
+
+rest.post(
 //   'https://auth-provider.example.com/api/login',
 //   async (req, res, ctx) => {},
 // )
