@@ -6,9 +6,8 @@ import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
 import {rest} from 'msw'
-import { setupServer } from 'msw/lib/node'
+import { setupServer } from 'msw/node'
 import Login from '../../components/login-submission'
-import { o } from 'msw/lib/glossary-58eca5a8'
 
 const buildLoginForm = build({
   fields: {
@@ -21,6 +20,9 @@ const server = setupServer(
   rest.post(
     'https://auth-provider.example.com/api/login',
     async(req, res, ctx) => {
+      if(!req.body.password) {
+        return res(ctx.status(400))
+      }
       return res(ctx.json({username: req.body.userName}))
     }
   )
@@ -37,8 +39,10 @@ test(`logging in displays the user's username`, async () => {
   await userEvent.type(screen.getByLabelText(/username/i), username)
   await userEvent.type(screen.getByLabelText(/password/i), password)
   // 🐨 uncomment this and you'll start making the request!
-  // await userEvent.click(screen.getByRole('button', {name: /submit/i}))
+  await userEvent.click(screen.getByRole('button', {name: /submit/i}))
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i))
 
+  expect(screen.getByText(username)).toBeInTheDocument()
   // as soon as the user hits submit, we render a spinner to the screen. That
   // spinner has an aria-label of "loading" for accessibility purposes, so
   // 🐨 wait for the loading spinner to be removed using waitForElementToBeRemoved

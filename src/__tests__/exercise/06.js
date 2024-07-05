@@ -5,8 +5,11 @@ import * as React from 'react'
 import {render, screen, act} from '@testing-library/react'
 import Location from '../../examples/location'
 
-// 🐨 set window.navigator.geolocation to an object that has a getCurrentPosition mock function
-
+beforeAll(() => {
+  window.navigator.geolocation = {
+    getCurrentPosition: jest.fn()
+  }
+})
 // 💰 I'm going to give you this handy utility function
 // it allows you to create a promise that you can resolve/reject on demand.
 function deferred() {
@@ -17,16 +20,26 @@ function deferred() {
   })
   return {promise, resolve, reject}
 }
-// 💰 Here's an example of how you use this:
-// const {promise, resolve, reject} = deferred()
-// promise.then(() => {/* do something */})
+const {promise, resolve, reject} = deferred()
+ promise.then(() => {/* do something */})
 // // do other setup stuff and assert on the pending state
 // resolve()
 // await promise
 // // assert on the resolved state
 
 test('displays the users current location', async () => {
-  // 🐨 create a fakePosition object that has an object called "coords" with latitude and longitude
+  const fakePosition = {
+    coords : {
+      latitude: 35,
+      longitude: 139
+    }
+  }
+  render(<Location />)
+  screen.debug()
+  expect(screen.getByLabelText(/loading/i)).toBeInTheDocument()
+
+
+ 
   // 📜 https://developer.mozilla.org/en-US/docs/Web/API/GeolocationPosition
   //
   // 🐨 create a deferred promise here
